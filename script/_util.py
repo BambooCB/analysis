@@ -13,5 +13,5 @@ def load_commits_csv() -> pd.DataFrame:
     # ② 再去掉时区信息，得到 tz-naive datetime64[ns]
     df['Date'] = df['Date'].dt.tz_convert(None)
 
-    return df
+    return df,df['Date'].min()
 
