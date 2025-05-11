@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
+import pathlib, re
 import pandas as pd, pathlib
 from wordcloud import WordCloud
+from _util import load_commits_csv, root
 
-root = pathlib.Path(__file__).resolve().parents[2] 
-out  = root/'analysis'/'result'
-out.mkdir(exist_ok=True, parents=True)
+out = root/'analysis'/'result'; out.mkdir(parents=True, exist_ok=True) 
 
-df = pd.read_csv(root / 'linux_mm_commits_all.csv')
-df['Date'] = pd.to_datetime(df['Date'], utc=True, errors='coerce')
-df['Date'] = df['Date'].dt.tz_convert(None)
+df  = load_commits_csv()
 
-bug = df[df['Commit Message'].str.contains(r'fix|bug|oops',case=False,regex=True)]
+bug = df[df['Commit Message'].str.contains(r'fix|bug|oops', flags=re.I, regex=True)]
 
 bug.groupby(bug['Date'].dt.year).size().to_csv(out/'bug_yearly.csv')
 
